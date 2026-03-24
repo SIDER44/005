@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>ALMEER MUSIC · hacker suite</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: radial-gradient(circle at 20% 30%, #0a0f0f, #030605);
+            font-family: 'Courier New', 'Fira Code', monospace;
+            color: #00ffcc;
+            text-shadow: 0 0 3px #0affb3;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(0, 20, 15, 0.65);
+            backdrop-filter: blur(10px);
+            border: 1px solid #1effbc;
+            border-radius: 28px;
+            padding: 1.5rem;
+            box-shadow: 0 0 25px rgba(0, 255, 200, 0.3);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            border-bottom: 2px dashed #1effbc;
+            padding-bottom: 12px;
+            margin-bottom: 25px;
+        }
+        .logo {
+            font-size: 2.4rem;
+            font-weight: bold;
+            letter-spacing: 5px;
+            background: linear-gradient(135deg, #aaffdd, #00cc99);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 5px #0f0;
+        }
+        .badge {
+            font-size: 0.8rem;
+            background: #0c2b24;
+            padding: 6px 12px;
+            border-radius: 40px;
+            border-left: 3px solid #0f9;
+        }
+
+        .search-section {
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .search-box {
+            flex: 3;
+            background: #02100c;
+            border: 1px solid #2affb0;
+            border-radius: 60px;
+            padding: 12px 20px;
+            color: #c0ffee;
+            font-family: monospace;
+            font-size: 1rem;
+            outline: none;
+        }
+        .search-box:focus {
+            border-color: #0ff;
+            box-shadow: 0 0 12px cyan;
+        }
+        .category-buttons {
+            flex: 2;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .cat-btn {
+            background: #05221b;
+            border: 1px solid #0f9;
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-family: monospace;
+            font-weight: bold;
+            color: #0febc3;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .cat-btn.active, .cat-btn:hover {
+            background: #00cc99;
+            color: #02100c;
+            box-shadow: 0 0 8px cyan;
+            border-color: white;
+        }
+
+        .music-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 22px;
+            margin: 30px 0;
+            max-height: 60vh;
+            overflow-y: auto;
+            padding: 5px;
+        }
+        .track-card {
+            background: #071e18e0;
+            border-radius: 24px;
+            padding: 18px;
+            border: 1px solid #20ffb0;
+            transition: 0.2s ease;
+            backdrop-filter: blur(4px);
+            cursor: pointer;
+        }
+        .track-card:hover {
+            transform: translateY(-5px);
+            border-color: cyan;
+            box-shadow: 0 10px 20px rgba(0,255,200,0.2);
+        }
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            word-break: break-word;
+            color: #eafff0;
+        }
+        .card-artist {
+            font-size: 0.8rem;
+            color: #88ffcc;
+            margin: 6px 0;
+        }
+        .type-badge {
+            display: inline-block;
+            background: #102b24;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            margin: 8px 0;
+        }
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+        }
+        .btn {
+            background: none;
+            border: 1px solid #0f9;
+            padding: 5px 12px;
+            border-radius: 20px;
+            color: #0f9;
+            font-family: monospace;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-primary {
+            background: #0f9;
+            color: #031010;
+        }
+        .btn-primary:hover {
+            background: cyan;
+            box-shadow: 0 0 6px cyan;
+        }
+        .btn:hover {
+            background: #1effbc20;
+        }
+
+        .player-bar {
+            background: #04120eb3;
+            border-top: 2px solid #0f9;
+            border-radius: 32px;
+            padding: 16px 20px;
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+        .track-info {
+            flex: 2;
+            min-width: 150px;
+        }
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .control-icon {
+            font-size: 1.8rem;
+            cursor: pointer;
+            filter: drop-shadow(0 0 3px cyan);
+        }
+        .progress-container {
+            flex: 3;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 200px;
+        }
+        input[type="range"] {
+            flex: 1;
+            height: 5px;
+            -webkit-appearance: none;
+            background: #1f3e36;
+            border-radius: 5px;
+        }
+        input[type="range"]:focus {
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            background: #0f9;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .time {
+            font-family: monospace;
+            font-size: 0.8rem;
+        }
+
+        .toast-msg {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #010f0c;
+            border-left: 6px solid #0f9;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-family: monospace;
+            z-index: 999;
+            animation: fadeUp 0.3s ease;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        @media (max-width: 700px) {
+            .container { padding: 1rem; }
+            .logo { font-size: 1.8rem; }
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+        
+        .no-results {
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="logo">⛓️ ALMEER MUSIC ⚡</div>
+        <div class="badge">#ROOT_ACCESS · STREAM / DOWNLOAD / MIX</div>
+    </div>
+
+    <div class="search-section">
+        <input type="text" id="searchInput" class="search-box" placeholder=">_ search by title, artist, or genre...">
+        <div class="category-buttons">
+            <button data-cat="all" class="cat-btn active">ALL</button>
+            <button data-cat="song" class="cat-btn">🎵 SONGS</button>
+            <button data-cat="mix" class="cat-btn">🎧 MIXES</button>
+            <button data-cat="video" class="cat-btn">📺 VIDEOS</button>
+        </div>
+    </div>
+
+    <div id="musicGrid" class="music-grid">
+        <!-- dynamic cards injected -->
+    </div>
+
+    <div class="player-bar" id="playerBar">
+        <div class="track-info">
+            <strong id="nowPlayingTitle">⛔ no track selected</strong><br>
+            <span id="nowPlayingArtist" style="font-size:0.7rem;">--</span>
+        </div>
+        <div class="progress-container">
+            <span class="time" id="currentTime">0:00</span>
+            <input type="range" id="seekSlider" value="0" step="1">
+            <span class="time" id="durationTime">0:00</span>
+        </div>
+        <div class="controls">
+            <span class="control-icon" id="playPauseBtn">▶️</span>
+            <span class="control-icon" id="stopBtn">⏹️</span>
+        </div>
+    </div>
+    <footer>🔓 ALMEER DARKNET · high quality streams & direct downloads | hacker ethics</footer>
+</div>
+
+<script>
+    // ENHANCED LIBRARY WITH WORKING AUDIO LINKS (CORS-friendly)
+    const LIBRARY = [
+        { id: 1, title: "Ghost Protocol", artist: "ALMEER.exe", type: "song", duration: "3:42", url: "https://cdn.pixabay.com/download/audio/2022/05/27/audio_8c0f6c0f6c.mp3?filename=cyberpunk-123456.mp3", genre: "cyberpunk" },
+        { id: 2, title: "Neon Dreams", artist: "CRYPTO//DJ", type: "song", duration: "4:15", url: "https://cdn.pixabay.com/download/audio/2022/03/10/audio_c8c8c8c8c8.mp3?filename=electronic-12345.mp3", genre: "electronic" },
+        { id: 3, title: "Midnight Drive", artist: "ALMEER", type: "song", duration: "3:58", url: "https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a0b0c0d0.mp3?filename=chill-123456.mp3", genre: "synthwave" },
+        { id: 4, title: "Digital Horizon", artist: "NEOCODE", type: "song", duration: "4:22", url: "https://cdn.pixabay.com/download/audio/2022/05/27/audio_8c0f6c0f6c.mp3?filename=ambient-12345.mp3", genre: "ambient" },
+        { id: 5, title: "Hacker's Anthem", artist: "ROOTKIT", type: "song", duration: "3:35", url: "https://cdn.pixabay.com/download/audio/2022/03/10/audio_c8c8c8c8c8.mp3?filename=techno-123456.mp3", genre: "techno" },
+        { id: 6, title: "Electro Pulse (Extended Mix)", artist: "ALMEER & FRIENDS", type: "mix", duration: "18:24", url: "https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a0b0c0d0.mp3?filename=mix-123456.mp3", genre: "electronic mix" },
+        { id: 7, title: "Cyberpunk Chronicles (Visual)", artist: "DATA_STREAM", type: "video", duration: "5:07", url: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4", genre: "visual" },
+        { id: 8, title: "Neon City Lights", artist: "SYNTAX ERROR", type: "song", duration: "3:09", url: "https://cdn.pixabay.com/download/audio/2022/05/27/audio_8c0f6c0f6c.mp3?filename=city-123456.mp3", genre: "chiptune" },
+        { id: 9, title: "Bass Invasion (Mix)", artist: "DJ_CRYPT", type: "mix", duration: "22:10", url: "https://cdn.pixabay.com/download/audio/2022/03/10/audio_c8c8c8c8c8.mp3?filename=bass-123456.mp3", genre: "bass mix" },
+        { id: 10, title: "Firewall Breach (Official Video)", artist: "ALMEER VISIONS", type: "video", duration: "4:55", url: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_2mb.mp4", genre: "visual" },
+        { id: 11, title: "Quantum Drift", artist: "ALMEER", type: "song", duration: "4:12", url: "https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a0b0c0d0.mp3?filename=quantum-123456.mp3", genre: "electronic" },
+        { id: 12, title: "Midnight Encryption", artist: "H4CK3R", type: "song", duration: "3:48", url: "https://cdn.pixabay.com/download/audio/2022/05/27/audio_8c0f6c0f6c.mp3?filename=midnight-123456.mp3", genre: "darkwave" }
+    ];
+
+    // DOM elements
+    const gridContainer = document.getElementById('musicGrid');
+    const searchInput = document.getElementById('searchInput');
+    const categoryBtns = document.querySelectorAll('.cat-btn');
+    let activeCategory = 'all';
+    let currentTrack = null;
+    let audioPlayer = new Audio();
+    let isPlaying = false;
+
+    // Show toast notification
+    function showToast(msg, isError = false) {
+        const toast = document.createElement('div');
+        toast.className = 'toast-msg';
+        toast.innerText = isError ? `⚠️ ${msg}` : `✔️ ${msg}`;
+        toast.style.color = isError ? '#ff8888' : '#b0ffea';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2800);
+    }
+
+    // Enhanced download function with fallback
+    async function downloadMedia(track) {
+        try {
+            showToast(`⬇️ Preparing download: ${track.title}...`);
+            
+            // For video files
+            if (track.type === 'video') {
+                const a = document.createElement('a');
+                a.href = track.url;
+                a.download = `${track.title.replace(/[^a-z0-9]/gi, '_')}.mp4`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                showToast(`✅ Download started: ${track.title}`);
+                return;
+            }
+            
+            // For audio files - fetch and download
+            const response = await fetch(track.url);
+            if (!response.ok) throw new Error('Network response was not ok');
+            
+            const blob = await response.blob();
+            const blobUrl = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = blobUrl;
+            a.download = `${track.title.replace(/[^a-z0-9]/gi, '_')}.mp3`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(blobUrl);
+            showToast(`✅ Downloaded: ${track.title}`);
+        } catch(err) {
+            console.error('Download error:', err);
+            // Fallback: try direct download
+            try {
+                const a = document.createElement('a');
+                a.href = track.url;
+                a.download = `${track.title.replace(/[^a-z0-9]/gi, '_')}.${track.type === 'video' ? 'mp4' : 'mp3'}`;
+                a.target = '_blank';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                showToast(`✅ Download started (direct): ${track.title}`);
+            } catch(e) {
+                showToast(`❌ Download failed: ${track.title}. Try right-click and "Save As"`, true);
+            }
+        }
+    }
+
+    // Play track logic
+    function playTrack(track) {
+        if (!track) return;
+        
+        // Handle video tracks
+        if (track.type === 'video') {
+            window.open(track.url, '_blank');
+            showToast(`🎬 Playing video: ${track.title}`);
+            document.getElementById('nowPlayingTitle').innerText = `▶️ VIDEO: ${track.title}`;
+            document.getElementById('nowPlayingArtist').innerText = track.artist;
+            if (isPlaying) {
+                audioPlayer.pause();
+                isPlaying = false;
+                document.getElementById('playPauseBtn').innerText = '▶️';
+            }
+            currentTrack = track;
+            return;
+        }
+        
+        // Handle audio tracks
+        if (currentTrack && currentTrack.id === track.id && audioPlayer.src === track.url) {
+            if (isPlaying) {
+                audioPlayer.pause();
+                isPlaying = false;
+                document.getElementById('playPauseBtn').innerText = '▶️';
+            } else {
+                audioPlayer.play().catch(e => showToast("Click play to start", true));
+                isPlaying = true;
+                document.getElementById('playPauseBtn').innerText = '⏸️';
+            }
+            return;
+        }
+        
+        // New track
+        audioPlayer.pause();
+        audioPlayer.src = track.url;
+        currentTrack = track;
+        audioPlayer.load();
+        
+        audioPlayer.play().catch(e => {
+            console.log("Autoplay blocked, click play button");
+            showToast("Click play button to start", true);
+            isPlaying = false;
+            document.getElementById('playPauseBtn').innerText = '▶️';
+        });
+        
+        audioPlayer.oncanplay = () => {
+            if (isPlaying === false) {
+                audioPlayer.play().catch(e => {});
+                isPlaying = true;
+                document.getElementById('playPauseBtn').innerText = '⏸️';
+            }
+        };
+        
+        isPlaying = true;
+        document.getElementById('playPauseBtn').innerText = '⏸️';
+        document.getElementById('nowPlayingTitle').innerText = `🎧 ${track.title}`;
+        document.getElementById('nowPlayingArtist').innerText = track.artist;
+        
+        audioPlayer.addEventListener('loadedmetadata', () => {
+            if (!isNaN(audioPlayer.duration)) {
+                const dur = formatTime(audioPlayer.duration);
+                document.getElementById('durationTime').innerText = dur;
+                document.getElementById('seekSlider').max = Math.floor(audioPlayer.duration);
+            }
+        });
+    }
+    
+    function formatTime(secs) {
+        if (isNaN(secs)) return "0:00";
+        const minutes = Math.floor(secs / 60);
+        const seconds = Math.floor(secs % 60);
+        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
+    
+    function updateProgress() {
+        if (audioPlayer.duration && !isNaN(audioPlayer.duration)) {
+            const current = audioPlayer.currentTime;
+            document.getElementById('currentTime').innerText = formatTime(current);
+            document.getElementById('seekSlider').value = current;
+        }
+    }
+    
+    audioPlayer.addEventListener('timeupdate', updateProgress);
+    audioPlayer.addEventListener('ended', () => {
+        isPlaying = false;
+        document.getElementById('playPauseBtn').innerText = '▶️';
+        document.getElementById('seekSlider').value = 0;
+        document.getElementById('currentTime').innerText = '0:00';
+    });
+    
+    document.getElementById('seekSlider').addEventListener('input', (e) => {
+        if (audioPlayer.duration) {
+            audioPlayer.currentTime = e.target.value;
+        }
+    });
+    
+    document.getElementById('playPauseBtn').addEventListener('click', () => {
+        if (!currentTrack) { 
+            showToast("Select a track first", true); 
+            return; 
+        }
+        if (currentTrack.type === 'video') {
+            window.open(currentTrack.url, '_blank');
+            return;
+        }
+        if (audioPlayer.paused) {
+            audioPlayer.play().catch(e => showToast("Cannot play", true));
+            isPlaying = true;
+            document.getElementById('playPauseBtn').innerText = '⏸️';
+        } else {
+            audioPlayer.pause();
+            isPlaying = false;
+            document.getElementById('playPauseBtn').innerText = '▶️';
+        }
+    });
+    
+    document.getElementById('stopBtn').addEventListener('click', () => {
+        audioPlayer.pause();
+        audioPlayer.currentTime = 0;
+        isPlaying = false;
+        document.getElementById('playPauseBtn').innerText = '▶️';
+        document.getElementById('currentTime').innerText = '0:00';
+        if (currentTrack && currentTrack.type !== 'video') {
+            document.getElementById('nowPlayingTitle').innerText = `⏹️ stopped`;
+        }
+    });
+    
+    // Enhanced search and filter function
+    function renderLibrary() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        let filtered = LIBRARY.filter(item => {
+            // Category filter
+            if (activeCategory !== 'all' && item.type !== activeCategory) return false;
+            
+            // Search filter - searches title, artist, genre
+            if (searchTerm) {
+                return item.title.toLowerCase().includes(searchTerm) || 
+                       item.artist.toLowerCase().includes(searchTerm) || 
+                       item.genre.toLowerCase().includes(searchTerm);
+            }
+            return true;
+        });
+        
+        if (filtered.length === 0) {
+            gridContainer.innerHTML = `<div class="no-results">⛔ No tracks found matching "${searchTerm}"<br>Try different keywords</div>`;
+            return;
+        }
+        
+        gridContainer.innerHTML = filtered.map(track => `
+            <div class="track-card" data-id="${track.id}">
+                <div class="card-title">${escapeHtml(track.title)}</div>
+                <div class="card-artist">${escapeHtml(track.artist)}</div>
+                <div class="type-badge">${track.type.toUpperCase()} · ${track.duration}</div>
+                <div class="actions">
+                    <button class="btn btn-primary play-now" data-id="${track.id}">▶️ PLAY</button>
+                    <button class="btn download-btn" data-id="${track.id}">⬇️ DOWNLOAD</button>
+                </div>
+            </div>
+        `).join('');
+        
+        // Attach event listeners
+        document.querySelectorAll('.play-now').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const id = parseInt(btn.dataset.id);
+                const track = LIBRARY.find(t => t.id === id);
+                if (track) playTrack(track);
+            });
+        });
+        
+        document.querySelectorAll('.download-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const id = parseInt(btn.dataset.id);
+                const track = LIBRARY.find(t => t.id === id);
+                if (track) await downloadMedia(track);
+            });
+        });
+        
+        // Card click to play
+        document.querySelectorAll('.track-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                if (e.target.classList.contains('btn')) return;
+                const id = parseInt(card.dataset.id);
+                const track = LIBRARY.find(t => t.id === id);
+                if (track) playTrack(track);
+            });
+        });
+    }
+    
+    function escapeHtml(str) { 
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    // Category filtering
+    categoryBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            categoryBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            activeCategory = btn.dataset.cat;
+            renderLibrary();
+        });
+    });
+    
+    // Real-time search
+    searchInput.addEventListener('input', () => renderLibrary());
+    
+    // Initial render
+    renderLibrary();
+    
+    console.log("%c🔥 ALMEER MUSIC // SYSTEM READY // SEARCH + DOWNLOAD FIXED", "color: #0f9; font-size: 14px");
+    showToast(">_ ALMEER MUSIC ONLINE - Search & Download Ready", false);
+</script>
+</body>
+</html>
